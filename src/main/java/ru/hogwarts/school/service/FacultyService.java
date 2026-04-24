@@ -1,45 +1,52 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
-import java.util.HashMap;
+import ru.hogwarts.school.repository.FacultyRepository;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
+@Service // Указываем Spring, что это компонент сервиса (бизнес-логика)
 public class FacultyService {
-    private Map<Long, Faculty> faculties = new HashMap<>();
-    private Long idCounter = 0L;
+
+    private final FacultyRepository facultyRepository; // Финальное поле для неизменяемости
+
+    @Autowired // Внедрение зависимости через конструктор (лучшая практика)
+    public FacultyService(FacultyRepository facultyRepository) {
+        this.facultyRepository = facultyRepository;
+    }
 
     public Faculty create(Faculty faculty) {
-        faculty.setId(++idCounter);
-        faculties.put(faculty.getId(), faculty);
-        return faculty;
+        return facultyRepository.save(faculty);
     }
 
     public Faculty getById(Long id) {
-        return faculties.get(id);
+        Optional<Faculty> optional = facultyRepository.findById(id);
+        return optional.orElse(null);
     }
 
     public List<Faculty> getAll() {
-        return faculties.values().stream().collect(Collectors.toList());
+        return facultyRepository.findAll();
     }
 
     public Faculty update(Long id, Faculty updatedFaculty) {
-        if (faculties.containsKey(id)) {
-            updatedFaculty.setId(id);
-            faculties.put(id, updatedFaculty);
-            return updatedFaculty;
+        if (facultyRepository.existsById(id)) {
+            updatedFaculty.setId(id); // Убеждаемся, что обновляем существующую запись по ID
+            return facultyRepository.save(updatedFaculty);
         }
         return null;
     }
 
     public boolean delete(Long id) {
-        return faculties.remove(id) != null;
+        if (facultyRepository.existsById(id)) {
+            facultyRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public List<Faculty> filterByColor(String color) {
-        return faculties.values().stream()
-                .filter(f -> f.getColor().equalsIgnoreCase(color))
-                .collect(Collectors.toList());
+        return facultyRepository.findByColorIgnoreCase(color);
     }
 }
