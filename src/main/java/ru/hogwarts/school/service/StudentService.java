@@ -1,9 +1,13 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
+
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +67,8 @@ public class StudentService {
     }
 
     public List<Student> getLastFiveStudents() {
-        return studentRepository.findTop5ByOrderByIdDesc();
+        // Создаем Pageable: страница 0, размер 5, сортировка по id по убыванию.
+        PageRequest pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"));
+        return studentRepository.findAllByOrderByIdDesc((Pageable) pageable);
     }
 }
