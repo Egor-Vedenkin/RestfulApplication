@@ -1,22 +1,53 @@
 package ru.hogwarts.school.model;
 
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 public class Faculty {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String color;
 
-    public Faculty(Long id, String name, String color) {
-        this.id = id;
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Student> students = new ArrayList<>();
+
+    public Faculty() {}
+
+    public Faculty(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Геттеры и сеттеры (ID не имеет сеттер, если используется GenerationType.IDENTITY)
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getColor() { return color; }
-    public void setColor(String color) { this.color = color; }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
 }
