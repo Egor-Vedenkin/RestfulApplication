@@ -67,8 +67,6 @@ public class StudentService {
     }
 
     public List<Student> getLastFiveStudents() {
-        // Создаем Pageable: страница 0, размер 5, сортировка по id по убыванию.
-        PageRequest pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"));
-        return studentRepository.findAllByOrderByIdDesc((Pageable) pageable);
+        return studentRepository.findLastFiveStudentsNative();
     }
 }
