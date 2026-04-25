@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +11,7 @@ import ru.hogwarts.school.repository.AvatarRepository;
 
 @Service
 public class AvatarService {
-
+    private static final Logger logger = LoggerFactory.getLogger(AvatarService.class);
     private final AvatarRepository avatarRepository;
 
     @Autowired
@@ -18,6 +20,7 @@ public class AvatarService {
     }
 
     public Page<Avatar> getAllAvatars(Pageable pageable) {
+        logger.info("Was invoked method for get all avatars");
         return avatarRepository.findAll(pageable);
     }
 }
