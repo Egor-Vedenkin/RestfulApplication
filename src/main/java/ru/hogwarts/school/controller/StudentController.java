@@ -1,6 +1,8 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 import java.util.List;
@@ -8,7 +10,13 @@ import java.util.List;
 @RestController
 @RequestMapping("student")
 public class StudentController {
-    private final StudentService studentService = new StudentService();
+
+    private final StudentService studentService;
+
+    @Autowired
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
 
     @PostMapping
     public Student create(@RequestBody Student student) {
@@ -38,5 +46,31 @@ public class StudentController {
     @GetMapping("filter/age")
     public List<Student> filterByAge(@RequestParam int age) {
         return studentService.filterByAge(age);
+    }
+
+    @GetMapping("filter/age/range")
+    public List<Student> filterByAgeRange(@RequestParam int minAge, @RequestParam int maxAge) {
+        return studentService.filterByAgeRange(minAge, maxAge);
+    }
+
+    @GetMapping("{id}/faculty")
+    public Faculty getFacultyOfStudent(@PathVariable Long id) {
+        Student student = studentService.getById(id);
+        return student != null ? student.getFaculty() : null;
+    }
+
+    @GetMapping("count")
+    public Long getTotalCount() {
+        return studentService.getTotalStudentsCount();
+    }
+
+    @GetMapping("average-age")
+    public Double getAverageAge() {
+        return studentService.getAverageStudentsAge();
+    }
+
+    @GetMapping("last-five")
+    public List<Student> getLastFiveStudents() {
+        return studentService.getLastFiveStudents();
     }
 }

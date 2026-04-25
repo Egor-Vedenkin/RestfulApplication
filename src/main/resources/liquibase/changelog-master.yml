@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: changelogs/001-add-index-student-name.yml
+  - include:
+      file: changelogs/002-add-index-faculty-name-color.yml
