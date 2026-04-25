@@ -1,45 +1,74 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import ru.hogwarts.school.repository.StudentRepository;
 
+import java.awt.print.Pageable;
+import java.util.List;
+import java.util.Optional;
+
+@Service
 public class StudentService {
-    private Map<Long, Student> students = new HashMap<>();
-    private Long idCounter = 0L;
+
+    private final StudentRepository studentRepository;
+
+    @Autowired
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     public Student create(Student student) {
-        student.setId(++idCounter);
-        students.put(student.getId(), student);
-        return student;
+        return studentRepository.save(student);
     }
 
     public Student getById(Long id) {
-        return students.get(id);
+        Optional<Student> optional = studentRepository.findById(id);
+        return optional.orElse(null);
     }
 
     public List<Student> getAll() {
-        return students.values().stream().collect(Collectors.toList());
+        return studentRepository.findAll();
     }
 
     public Student update(Long id, Student updatedStudent) {
-        if (students.containsKey(id)) {
+        if (studentRepository.existsById(id)) {
             updatedStudent.setId(id);
-            students.put(id, updatedStudent);
-            return updatedStudent;
+            return studentRepository.save(updatedStudent);
         }
         return null;
     }
 
     public boolean delete(Long id) {
-        return students.remove(id) != null;
+        if (studentRepository.existsById(id)) {
+            studentRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public List<Student> filterByAge(int age) {
-        return students.values().stream()
-                .filter(s -> s.getAge() == age)
-                .collect(Collectors.toList());
+        return studentRepository.findByAge(age);
+    }
+
+    public List<Student> filterByAgeRange(int minAge, int maxAge) {
+        return studentRepository.findByAgeBetween(minAge, maxAge);
+    }
+
+    public Long getTotalStudentsCount() {
+        return studentRepository.getTotalCount();
+    }
+
+    public Double getAverageStudentsAge() {
+        return studentRepository.getAverageAge();
+    }
+
+    public List<Student> getLastFiveStudents() {
+        // Создаем Pageable: страница 0, размер 5, сортировка по id по убыванию.
+        PageRequest pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"));
+        return studentRepository.findAllByOrderByIdDesc((Pageable) pageable);
     }
 }
