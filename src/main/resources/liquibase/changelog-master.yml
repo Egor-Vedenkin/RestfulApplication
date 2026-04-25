@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - includeAll:
+      path: student-indexes/
+  - includeAll:
+      path: faculty-indexes/

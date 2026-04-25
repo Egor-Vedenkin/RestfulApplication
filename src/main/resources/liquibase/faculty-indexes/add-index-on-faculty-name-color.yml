@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: EgorVedenkin
+      changes:
+        - createIndex:
+            indexName: idx_faculty_name_color # Название индекса, отражающее суть
+            tableName: faculty
+            columns:
+              - column: name
+              - column: color
