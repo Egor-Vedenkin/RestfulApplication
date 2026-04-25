@@ -1,16 +1,20 @@
 package ru.hogwarts.school.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity // Указываем, что это сущность JPA
+@Entity
 public class Faculty {
-    @Id // Первичный ключ
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Автоматическая генерация ID
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String color;
 
-    // Конструктор по умолчанию нужен JPA/Hibernate
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Student> students = new ArrayList<>();
+
     public Faculty() {}
 
     public Faculty(String name, String color) {
@@ -41,5 +45,9 @@ public class Faculty {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Student> getStudents() {
+        return students;
     }
 }
