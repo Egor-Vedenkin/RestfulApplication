@@ -14,4 +14,11 @@ public class InfoController {
     public String getPort() {
         return serverPort;
     }
+
+    @GetMapping("sum-million")
+    public Long getSumToMillion() {
+        long n = 1_000_000;
+        return n * (n + 1) / 2;
+    }
+
 }

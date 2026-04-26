@@ -73,4 +73,14 @@ public class StudentController {
     public List<Student> getLastFiveStudents() {
         return studentService.getLastFiveStudents();
     }
+
+    @GetMapping("names/starts-with-a")
+    public List<String> getStudentNamesStartsWithA() {
+        List<Student> students = studentService.getAll();
+        return students.stream()
+                .filter(s -> s.getName() != null && s.getName().toUpperCase().startsWith("A"))
+                .map(s -> s.getName().toUpperCase())
+                .sorted()
+                .toList();
+    }
 }

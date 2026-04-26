@@ -5,7 +5,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
+
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @RestController // Указывает, что класс — REST контроллер (@ResponseBody на все методы)
 @RequestMapping("faculty") // Базовый путь: /faculty/*
@@ -58,4 +61,15 @@ public class FacultyController {
         Faculty faculty = facultyService.getById(id);
         return faculty != null ? faculty.getStudents() : null;
     }
+
+    @GetMapping("longest-name")
+    public String getLongestFacultyName() {
+        List<Faculty> faculties = facultyService.getAll();
+        return faculties.stream()
+                .map(Faculty::getName)
+                .filter(Objects::nonNull)
+                .max(Comparator.comparingInt(String::length))
+                .orElse(null);
+    }
+
 }
