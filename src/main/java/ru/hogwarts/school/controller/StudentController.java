@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
+
 import java.util.List;
 
 @RestController
@@ -82,5 +83,56 @@ public class StudentController {
                 .map(s -> s.getName().toUpperCase())
                 .sorted()
                 .toList();
+    }
+
+    @GetMapping("/students/print-parallel")
+    public String printStudentsParallel() {
+        List<Student> students = studentService.getAll();
+        if (students.size() < 6) {
+            return "Недостаточно студентов для демонстрации (нужно минимум 6).";
+        }
+
+        System.out.println("Main Thread: " + students.get(0).getName());
+        System.out.println("Main Thread: " + students.get(1).getName());
+
+        new Thread(() -> {
+            System.out.println("Thread 1: " + students.get(2).getName());
+            System.out.println("Thread 1: " + students.get(3).getName());
+        }).start();
+
+        new Thread(() -> {
+            System.out.println("Thread 2: " + students.get(4).getName());
+            System.out.println("Thread 2: " + students.get(5).getName());
+        }).start();
+
+        return "Имена студентов выведены в консоль параллельно. Проверьте логи сервера.";
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public String printStudentsSynchronized() {
+        List<Student> students = studentService.getAll();
+        if (students.size() < 6) {
+            return "Недостаточно студентов для демонстрации (нужно минимум 6).";
+        }
+
+        // Основной поток: первые два имени через синхронизированный метод
+        printNameSync("Main Thread: " + students.get(0).getName());
+        printNameSync("Main Thread: " + students.get(1).getName());
+
+        new Thread(() -> {
+            printNameSync("Thread 1: " + students.get(2).getName());
+            printNameSync("Thread 1: " + students.get(3).getName());
+        }).start();
+
+        new Thread(() -> {
+            printNameSync("Thread 2: " + students.get(4).getName());
+            printNameSync("Thread 2: " + students.get(5).getName());
+        }).start();
+
+        return "Имена студентов выведены в консоль с синхронизацией. Проверьте логи сервера.";
+    }
+
+    private synchronized void printNameSync(String name) {
+        System.out.println(name);
     }
 }
